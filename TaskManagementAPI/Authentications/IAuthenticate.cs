@@ -4,7 +4,7 @@ namespace TaskManagementAPI.Authentications
 {
     public interface IAuthenticate
     {
-        bool IsUserAuthenticated(UserCredentials credentials);
-        string GetUserIdFromCredentials(UserCredentials credentials);
+        Task<bool> IsUserAuthenticated(UserModel credentials);
+        int GetUserIdFromCredentials(UserModel credentials);
     }
 }

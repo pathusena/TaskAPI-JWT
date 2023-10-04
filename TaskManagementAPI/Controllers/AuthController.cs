@@ -19,16 +19,16 @@ namespace TaskManagementAPI.Controllers
         }
 
         [HttpPost("authenticate")]
-        public IActionResult Authenticate([FromBody] UserCredentials credentials)
+        public async Task<IActionResult> Authenticate([FromBody] UserModel credentials)
         {
-            if (_authenticateService.IsUserAuthenticated(credentials))
+            if (await _authenticateService.IsUserAuthenticated(credentials))
             {
                 var userId = _authenticateService.GetUserIdFromCredentials(credentials);
                 var username = credentials.Username;
 
                 var claims = new[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, userId),
+                    new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
                     new Claim(ClaimTypes.Name, username)
                 };
 

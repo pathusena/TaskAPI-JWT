@@ -1,30 +1,45 @@
-﻿using TaskManagementAPI.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using TaskManagementAPI.Data;
+using TaskManagementAPI.Models;
 
 namespace TaskManagementAPI.Authentications
 {
     public class Authenticate : IAuthenticate
     {
-        public bool IsUserAuthenticated(UserCredentials credentials)
+        private readonly ApplicationDBContext _context; // Inject your DbContext
+
+        public Authenticate(ApplicationDBContext context)
         {
-            // In a real-world scenario, you would perform actual user authentication here,
-            // such as checking against a database or an identity provider.
-
-            // For demonstration purposes, let's assume a simple hardcoded check.
-            var validUsername = "testuser";
-            var validPassword = "testpassword";
-
-            // Check if the provided credentials match the valid credentials.
-            return credentials.Username == validUsername && credentials.Password == validPassword;
+            _context = context;
         }
 
-        // Example of a GetUserIdFromCredentials function (assuming username is the user identifier)
-        public string GetUserIdFromCredentials(UserCredentials credentials)
+        public async Task<bool> IsUserAuthenticated(UserModel credentials)
         {
-            // In a real application, you would typically fetch the user's unique identifier
-            // (e.g., from a database) based on the provided username.
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == credentials.Username && u.Active == true);
 
-            // For demonstration purposes, we'll return a hardcoded user ID.
-            return "123456789"; // Replace with the actual user ID retrieval logic.
+            if (user == null)
+            {
+                return false;
+            }
+
+            credentials.Id = user.Id;
+
+            bool isPasswordValid = VerifyPassword(user, credentials.Password);
+
+            return isPasswordValid;
+        }
+
+        public int GetUserIdFromCredentials(UserModel credentials)
+        {
+            return credentials.Id;
+        }
+
+        private bool VerifyPassword(UserModel user, string inputPassword)
+        {
+            if (user.Password.Equals(inputPassword)) { 
+                return true;
+            }
+            return false;
         }
     }
 }

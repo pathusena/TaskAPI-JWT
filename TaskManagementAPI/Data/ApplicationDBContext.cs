@@ -10,5 +10,6 @@ namespace TaskManagementAPI.Data
         }
 
         public DbSet<TaskModel> Tasks { get; set; }
+        public DbSet<UserModel> Users { get; set; }
     }
 }

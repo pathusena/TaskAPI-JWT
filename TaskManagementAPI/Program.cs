@@ -5,6 +5,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using TaskManagementAPI.Authentications;
 using TaskManagementAPI.Data;
+using TaskManagementAPI.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
