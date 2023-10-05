@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+using System.Text;
 using TaskManagementAPI.Data;
 using TaskManagementAPI.Models;
 
@@ -13,7 +15,7 @@ namespace TaskManagementAPI.Authentications
             _context = context;
         }
 
-        public async Task<bool> IsUserAuthenticated(UserModel credentials)
+        public async Task<bool> IsUserAuthenticated(UserLogin credentials)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == credentials.Username && u.Active == true);
 
@@ -29,17 +31,26 @@ namespace TaskManagementAPI.Authentications
             return isPasswordValid;
         }
 
-        public int GetUserIdFromCredentials(UserModel credentials)
+        public int GetUserIdFromCredentials(UserLogin credentials)
         {
             return credentials.Id;
         }
 
         private bool VerifyPassword(UserModel user, string inputPassword)
         {
-            if (user.Password.Equals(inputPassword)) { 
+            var hashedPassword = HashPassword(inputPassword);
+            if (user.PasswordHash == hashedPassword) { 
                 return true;
             }
             return false;
+        }
+
+        public string HashPassword(string password)
+        {
+            using var sha256 = SHA256.Create();
+            byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+
+            return Convert.ToBase64String(bytes);
         }
     }
 }

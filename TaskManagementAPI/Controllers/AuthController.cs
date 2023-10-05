@@ -19,7 +19,7 @@ namespace TaskManagementAPI.Controllers
         }
 
         [HttpPost("authenticate")]
-        public async Task<IActionResult> Authenticate([FromBody] UserModel credentials)
+        public async Task<IActionResult> Authenticate([FromBody] UserLogin credentials)
         {
             if (await _authenticateService.IsUserAuthenticated(credentials))
             {
